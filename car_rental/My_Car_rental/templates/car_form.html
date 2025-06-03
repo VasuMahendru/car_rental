@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ view.object|default:"Add" }} Car{% endblock %}
+{% block content %}
+<h2>{% if view.object %}Edit{% else %}Add{% endif %} Car</h2>
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-success">Save</button>
+  <a href="{% url 'manage_car' %}" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+{% endblock %}

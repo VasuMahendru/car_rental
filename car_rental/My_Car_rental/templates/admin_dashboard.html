@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<div class="row mb-3">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Cars</h5>
+        <p class="card-text display-6">{{ total_cars }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Bookings</h5>
+        <p class="card-text display-6">{{ total_bookings }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-info mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Customers</h5>
+        <p class="card-text display-6">{{ total_customers }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-warning mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Pending Bookings</h5>
+        <p class="card-text display-6">{{ pending_bookings }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+&nbsp;
+&nbsp;
+
+<h3>Filter Bookings</h3>
+<form method="get" class="row g-3 mb-4">
+  <div class="col-md-3">
+    <input type="text" name="customer_name" value="{{ customer_name }}" placeholder="Customer username" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">All Statuses</option>
+      <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+      <option value="canceled" {% if status_filter == 'canceled' %}selected{% endif %}>Canceled</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <input type="date" name="date_from" value="{{ date_from }}" class="form-control" placeholder="From">
+  </div>
+  <div class="col-md-2">
+    <input type="date" name="date_to" value="{{ date_to }}" class="form-control" placeholder="To">
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+  </div>
+</form>
+&nbsp;
+&nbsp;
+
+<h3>Bookings</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Booking #</th>
+      <th>Car</th>
+      <th>Customer</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for booking in bookings %}
+    <tr>
+      <td>{{ booking.id }}</td>
+      <td>{{ booking.car.make }} {{ booking.car.model }}</td>
+      <td>{{ booking.user.username }}</td>
+      <td>{{ booking.start_date }}</td>
+      <td>{{ booking.end_date }}</td>
+      <td>{{ booking.status|capfirst }}</td>
+      <td>
+        {% if booking.status != 'confirmed' %}
+          <a href="{% url 'update_booking_status' booking.id 'confirmed' %}" class="btn btn-sm btn-success">Confirm</a>
+        {% endif %}
+        {% if booking.status != 'canceled' %}
+          <a href="{% url 'update_booking_status' booking.id 'canceled' %}" class="btn btn-sm btn-danger">Cancel</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" class="text-center">No bookings found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

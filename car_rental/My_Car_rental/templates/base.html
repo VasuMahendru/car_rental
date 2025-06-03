@@ -1,0 +1,39 @@
+{% block content %}
+    {% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous"></script>
+</body>
+</html>
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ car.make }} {{ car.model }} ({{ car.year }})</h2>
+<p>Registration #: {{ car.registration_number }}</p>
+<p>Price per day: ${{ car.price_per_day }}</p>
+<p>Availability: {% if car.availability %}Available{% else %}Not available{% endif %}</p>
+
+{% if car.image %}
+  <img src="{{ car.image.url }}" alt="{{ car.make }} {{ car.model }}" style="max-width: 100%; height: auto; border-radius: 8px;">
+{% endif %}
+
+<h3>User Feedback & Ratings</h3>
+{% if feedbacks %}
+  <ul style="list-style:none; padding: 0;">
+    {% for fb in feedbacks %}
+      <li style="border-bottom: 1px solid #ddd; padding: 8px 0;">
+        <strong>{{ fb.user.username }}</strong> rated ★{{ fb.rating }}<br />
+        <em>{{ fb.comments|linebreaks }}</em>
+        <small style="color: #666;"> on {{ fb.created_at|date:"M d, Y" }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No feedback yet.</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+  <p><a href="{% url 'add_feedback' car.id %}" class="btn">Add / Edit Feedback</a></p>
+{% else %}
+  <p><a href="{% url 'login' %}">Log in</a> to leave feedback.</p>
+{% endif %}
+
+<a href="{% url 'car_list' %}">Back to Cars List</a>
+{% endblock %}

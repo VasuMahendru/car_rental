@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Payment for Booking {{ booking.id }}{% endblock %}
+{% block content %}
+<h2>Payment for Booking #{{ booking.id }}</h2>
+&nbsp;
+&nbsp;
+
+<p>Car: <strong>{{ booking.car.make }} {{ booking.car.model }}</strong></p>
+<p>Rental Period: <strong>{{ booking.start_date }} to {{ booking.end_date }}</strong></p>
+<p>Price per day: <strong>${{ booking.car.price_per_day }}</strong></p>
+&nbsp;
+&nbsp;
+
+<form method="post" class="mt-4">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary">Pay Now (Simulated)</button>
+  <a href="{% url 'customer_dashboard' %}" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Available Cars</h2>
+
+<form id="car-search-form" style="margin-bottom: 20px;">
+    <input type="text" id="search-query" placeholder="Search by make or model" style="padding: 10px; width: 250px;" />
+    <input type="number" id="min-price" placeholder="Min Price" min="0" style="padding: 10px; width: 120px;" />
+    <input type="number" id="max-price" placeholder="Max Price" min="0" style="padding: 10px; width: 120px;" />
+    <label style="margin-left:10px;">
+      <input type="checkbox" id="available-only" checked /> Available Only
+    </label>
+    <button type="submit" class="btn" style="margin-left: 12px;">Search</button>
+</form>
+
+<div id="cars-results">
+  <!-- Initially loaded cars will appear here -->
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById('car-search-form');
+    const resultsDiv = document.getElementById('cars-results');
+
+    function renderCars(cars) {
+      if (cars.length === 0) {
+        resultsDiv.innerHTML = "<p>No cars found.</p>";
+        return;
+      }
+      let html = '<table><thead><tr><th>Make & Model</th><th>Year</th><th>Reg. Number</th><th>Price/day</th><th>Availability</th><th>Action</th></tr></thead><tbody>';
+      cars.forEach(car => {
+        html += `<tr>
+          <td data-label="Make & Model">${car.make} ${car.model}</td>
+          <td data-label="Year">${car.year}</td>
+          <td data-label="Reg. Number">${car.registration_number}</td>
+          <td data-label="Price/day">$${car.price_per_day}</td>
+          <td data-label="Availability">${car.availability ? 'Available' : 'Not Available'}</td>
+          <td data-label="Action">${car.availability ? `<a href="/book/${car.id}/" class="btn">Book Now</a>` : 'Unavailable'}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      resultsDiv.innerHTML = html;
+    }
+
+    async function loadCars(params = {}) {
+      const url = new URL('/ajax/car_search/', window.location.origin);
+      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+      const response = await fetch(url);
+      const data = await response.json();
+      renderCars(data.cars);
+    }
+
+    // Load all cars initially with availability filter
+    loadCars({available:'true'});
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const q = document.getElementById('search-query').value.trim();
+      const minPrice = document.getElementById('min-price').value;
+      const maxPrice = document.getElementById('max-price').value;
+      const availableOnly = document.getElementById('available-only').checked;
+
+      const params = {};
+      if(q) params.q = q;
+      if(minPrice) params.min_price = minPrice;
+      if(maxPrice) params.max_price = maxPrice;
+      if(availableOnly) params.available = 'true';
+
+      loadCars(params);
+    });
+  });
+</script>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  thead {
+    background-color: #34495e;
+    color: white;
+  }
+  th, td {
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  tr:nth-child(even) {
+    background-color: #f7f9fb;
+  }
+  tr:hover {
+    background-color: #d6eaf8;
+  }
+</style>
+
+{% endblock %}

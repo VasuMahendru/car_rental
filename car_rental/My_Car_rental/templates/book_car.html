@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ car.make }} {{ car.model }}{% endblock %}
+{% block content %}
+<h2>Book {{ car.make }} {{ car.model }} ({{ car.registration_number }})</h2>
+&nbsp;
+&nbsp;
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-success">Submit Booking</button>
+  <a href="{% url 'car_list' %}" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+{% endblock %}
